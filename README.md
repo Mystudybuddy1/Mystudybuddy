@@ -1,2 +1,177 @@
-# Mystudybuddy
-A simple Python-based homework tracker app for school students using Tkinter.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyStudyBuddy</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    input, button {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .completed span {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .homework-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    #timer-display {
+      font-size: 1.5em;
+      text-align: center;
+      margin-top: 10px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 MyStudyBuddy</h1>
+
+  <h2>📚 Homework Tracker</h2>
+  <input id="subject" placeholder="Subject" />
+  <input id="task" placeholder="Homework Task" />
+  <input id="due" placeholder="Due Date (e.g. June 15)" />
+  <button onclick="addHomework()">➕ Add Homework</button>
+  <div id="homework-list"></div>
+
+  <h2>📖 Word of the Day</h2>
+  <button onclick="showWord()">Show Word</button>
+  <div id="word-section"></div>
+
+  <h2>⏰ Study Timer</h2>
+  <input id="minutes" placeholder="Enter minutes" type="number" min="1" />
+  <button onclick="startTimer()">Start Timer</button>
+  <div id="timer-display"></div>
+
+  <script>
+    const words = [
+      { word: "Brave", meaning: "Showing courage", example: "The brave fireman saved the cat." },
+      { word: "Joyful", meaning: "Very happy", example: "She felt joyful on her birthday." },
+      { word: "Clever", meaning: "Smart and quick-thinking", example: "The clever boy solved the puzzle." },
+      { word: "Kind", meaning: "Being nice to others", example: "He was kind to his classmates." },
+      { word: "Fast", meaning: "Moving quickly", example: "The rabbit is fast." },
+      { word: "Neat", meaning: "Tidy and clean", example: "Keep your room neat and clean." },
+      { word: "Bright", meaning: "Full of light", example: "The sun is very bright today." },
+      { word: "Polite", meaning: "Having good manners", example: "Always be polite to elders." },
+      { word: "Funny", meaning: "Causing laughter", example: "The clown was very funny." },
+      { word: "Strong", meaning: "Having great power", example: "The man is strong enough to lift boxes." },
+      { word: "Happy", meaning: "Feeling pleasure", example: "I was happy to see my best friend." },
+      { word: "Sad", meaning: "Feeling sorrow", example: "She was sad when her toy broke." },
+      { word: "Big", meaning: "Of large size", example: "That elephant is very big." },
+      { word: "Small", meaning: "Of little size", example: "The kitten is small and cute." },
+      { word: "Cold", meaning: "Low in temperature", example: "I wore a jacket because it was cold." },
+      { word: "Hot", meaning: "High in temperature", example: "The tea is very hot." },
+      { word: "Tall", meaning: "Of great height", example: "The tower is tall." },
+      { word: "Short", meaning: "Not tall", example: "My sister is short." },
+      { word: "Clean", meaning: "Free from dirt", example: "Keep your hands clean before eating." },
+      { word: "New", meaning: "Not old", example: "I got a new pencil box." }
+    ];
+
+    function addHomework() {
+      const subject = document.getElementById("subject").value.trim();
+      const task = document.getElementById("task").value.trim();
+      const due = document.getElementById("due").value.trim();
+
+      if (subject && task && due) {
+        const div = document.createElement("div");
+        div.classList.add("homework-item");
+        div.innerHTML = `
+          <span>${subject} - ${task} (Due: ${due})</span>
+          <button onclick="toggleDone(this)">✔</button>
+        `;
+        document.getElementById("homework-list").appendChild(div);
+        document.getElementById("subject").value = "";
+        document.getElementById("task").value = "";
+        document.getElementById("due").value = "";
+      } else {
+        alert("Please fill all homework fields.");
+      }
+    }
+
+    function toggleDone(button) {
+      button.parentElement.classList.toggle("completed");
+    }
+
+    function showWord() {
+      const word = words[Math.floor(Math.random() * words.length)];
+      document.getElementById("word-section").innerHTML = `
+        <p><strong>Word:</strong> ${word.word}</p>
+        <p><strong>Meaning:</strong> ${word.meaning}</p>
+        <p><strong>Example:</strong> <em>${word.example}</em></p>
+      `;
+    }
+
+    function startTimer() {
+      let minutes = parseInt(document.getElementById("minutes").value);
+      if (isNaN(minutes) || minutes <= 0) {
+        alert("Enter valid study time in minutes.");
+        return;
+      }
+
+      let totalSeconds = minutes * 60;
+      const display = document.getElementById("timer-display");
+      const interval = setInterval(() => {
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        totalSeconds--;
+        if (totalSeconds < 0) {
+          clearInterval(interval);
+          alert("⏰ Time's up! Take a 5-minute break.");
+          startBreakTimer();
+        }
+      }, 1000);
+    }
+
+    function startBreakTimer() {
+      let breakTime = 5 * 60;
+      const display = document.getElementById("timer-display");
+      const interval = setInterval(() => {
+        const mins = Math.floor(breakTime / 60);
+        const secs = breakTime % 60;
+        display.textContent = `☕ Break: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        breakTime--;
+        if (breakTime < 0) {
+          clearInterval(interval);
+          alert("🎉 Break over! Time to study again!");
+          display.textContent = "";
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
+
+
